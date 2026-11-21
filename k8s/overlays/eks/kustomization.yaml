@@ -1,0 +1,20 @@
+# Despliegue en el cluster EKS creado con Terraform (entorno dev en AWS).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+components:
+  - ../../components/off-hours
+images:
+  # El pipeline ejecuta: kustomize edit set image ghcr.io/OWNER/tasks-api=ghcr.io/<owner>/tasks-api:<sha>
+  - name: ghcr.io/OWNER/tasks-api
+    newName: ghcr.io/OWNER/tasks-api
+    newTag: latest
+patches:
+  - target:
+      kind: ConfigMap
+      name: tasks-api-config
+    patch: |-
+      - op: add
+        path: /data/APP_ENV
+        value: eks-dev

@@ -1,0 +1,75 @@
+# ServiceAccount propia sin permisos (principio de mínimo privilegio).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tasks-api
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tasks-api-config
+data:
+  NODE_ENV: production
+  PORT: "3000"
+  REDIS_URL: redis://tasks-api-redis:6379
+---
+# Mantiene al menos 1 Pod durante drenados de nodos (p. ej. el apagado FinOps o upgrades).
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: tasks-api
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tasks-api
+---
+# Solo el ingress-nginx y Prometheus pueden hablar con la app.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: tasks-api
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: tasks-api
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - port: 3000
+---
+# FinOps: techo de recursos del namespace (evita gasto descontrolado).
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: tasks-api-quota
+spec:
+  hard:
+    requests.cpu: "2"
+    requests.memory: 2Gi
+    limits.cpu: "4"
+    limits.memory: 4Gi
+    pods: "20"
+---
+# Valores por defecto para cualquier contenedor que no declare recursos.
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: tasks-api-defaults
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: 200m
+        memory: 128Mi
+      defaultRequest:
+        cpu: 50m
+        memory: 64Mi
