@@ -1,0 +1,59 @@
+# Entorno local: app + Prometheus + Grafana.
+#   docker compose up -d --build
+#   App:        http://localhost:3000  (estado en Redis)
+#   Prometheus: http://localhost:9090
+#   Grafana:    http://localhost:3001  (usuario admin / contraseña en .env, por defecto "admin")
+name: tasks-api
+
+services:
+  app:
+    build:
+      context: ./app
+      args:
+        APP_VERSION: local
+    image: tasks-api:local
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on: [redis]
+    ports:
+      - "3000:3000"
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    deploy:
+      resources:
+        limits: { cpus: "0.50", memory: 128M }
+    restart: unless-stopped
+
+  redis:
+    image: redis:8.2-alpine
+    command: ["--save", "60", "1"]
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=2d
+    volumes:
+      - ./monitoring/local/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/local/alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on: [app]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./monitoring/local/grafana-provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/k8s/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3001:3000"
+    depends_on: [prometheus]
+    restart: unless-stopped
