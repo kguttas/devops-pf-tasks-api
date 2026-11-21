@@ -313,11 +313,12 @@ kubectl -n tasks-api get hpa tasks-api -w        # TARGETS sube sobre 60 % y REP
 
 ## 10. Evidencias
 
-Ver [`docs/evidencias/`](docs/evidencias/) y el informe [`docs/INFORME.md`](docs/INFORME.md).
+Ver [`docs/evidencias/`](docs/evidencias/) y el informe [`docs/INFORME.md`](docs/INFORME.md) (versión PDF de entrega: [`docs/PFEstrada.pdf`](docs/PFEstrada.pdf)).
 
 | Evidencia | Archivo |
 |---|---|
-| Ejecución del pipeline en GitHub Actions | pestaña [Actions](https://github.com/kguttas/devops-pf-tasks-api/actions) (artefacto `evidence-deploy-test`) |
+| Ejecución del pipeline en GitHub Actions (todos los jobs en verde) | [`docs/evidencias/pipeline-run.png`](docs/evidencias/pipeline-run.png) y pestaña [Actions](https://github.com/kguttas/devops-pf-tasks-api/actions) |
+| Evidencias generadas por el propio pipeline (HPA, smoke, Prometheus, ZAP, Trivy, tests) | [`docs/evidencias/ci/`](docs/evidencias/ci/) |
 | Tests unitarios y cobertura | [`docs/evidencias/tests.txt`](docs/evidencias/tests.txt) |
 | Recursos de Kubernetes desplegados | [`docs/evidencias/k8s-resources.txt`](docs/evidencias/k8s-resources.txt) |
 | Escalado del HPA bajo carga | [`docs/evidencias/hpa-scaling.log`](docs/evidencias/hpa-scaling.log) |

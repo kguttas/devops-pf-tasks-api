@@ -1,0 +1,39 @@
+
+> tasks-api@1.0.0 test
+> node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=test-results.xml "test/**/*.test.js"
+
+✔ GET / devuelve información del servicio (115.842746ms)
+✔ health y readiness responden 200 (8.542515ms)
+✔ cabeceras de seguridad presentes (helmet) (3.716437ms)
+✔ CRUD de tareas (56.437921ms)
+✔ validación de entrada (13.058893ms)
+✔ /api/work limita el tiempo de CPU (505.335865ms)
+✔ /metrics expone métricas Prometheus (7.098217ms)
+✔ ruta inexistente devuelve 404 JSON (2.107053ms)
+✔ RedisStore: CRUD sobre el hash compartido (1.915771ms)
+✔ dos instancias de la app ven los mismos datos con Redis (141.234684ms)
+✔ readyz devuelve 503 si el almacén no responde (43.699924ms)
+✔ createStore sin REDIS_URL usa memoria (0.491218ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 924.989672
+ℹ start of coverage report
+ℹ ---------------------------------------------------------------
+ℹ file           | line % | branch % | funcs % | uncovered lines
+ℹ ---------------------------------------------------------------
+ℹ src            |        |          |         | 
+ℹ  app.js        |  96.91 |    89.29 |   86.67 | 86-87 91
+ℹ  metrics.js    | 100.00 |   100.00 |  100.00 | 
+ℹ  store.js      |  95.37 |    95.65 |   94.44 | 101-105
+ℹ test           |        |          |         | 
+ℹ  app.test.js   | 100.00 |    93.75 |  100.00 | 
+ℹ  store.test.js | 100.00 |   100.00 |  100.00 | 
+ℹ ---------------------------------------------------------------
+ℹ all files      |  98.04 |    94.79 |   95.45 | 
+ℹ ---------------------------------------------------------------
+ℹ end of coverage report

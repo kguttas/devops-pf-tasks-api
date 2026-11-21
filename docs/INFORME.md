@@ -199,6 +199,17 @@ FAIL-NEW: 0  FAIL-INPROG: 0  WARN-NEW: 0  WARN-INPROG: 0  INFO: 0  IGNORE: 1  PA
 
 ### 3.8 Pipeline en GitHub Actions
 
+Ejecución completa en verde (build, tests, CodeQL, Trivy, imagen, Terraform, despliegue en kind con
+monitoreo, prueba de carga y DAST). `Deploy en EKS` aparece omitido porque la variable `AWS_ENABLED`
+no está activa (no se aprovisionó una cuenta AWS para evitar costos; el código Terraform se valida en cada ejecución):
+
+![Ejecución del pipeline](evidencias/pipeline-run.png)
+
+Evidencias generadas por el propio pipeline en el runner de GitHub ([docs/evidencias/ci](evidencias/ci/)):
+el HPA escaló a 5 réplicas también en CI ([hpa-scaling.log](evidencias/ci/hpa-scaling.log)), los smoke tests
+pasaron ([smoke-test.log](evidencias/ci/smoke-test.log)) y ZAP no reportó alertas de riesgo alto
+([zap-baseline-report.md](evidencias/ci/zap-baseline-report.md)).
+
 Cada ejecución en https://github.com/kguttas/devops-pf-tasks-api/actions deja los artefactos
 `test-results`, `trivy-fs-report`, `trivy-image-report`, `docker-image` y `evidence-deploy-test`
 (estado del cluster, evolución del HPA, consultas a Prometheus, captura de Grafana y reportes de ZAP).

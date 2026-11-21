@@ -1,0 +1,75 @@
+# Evolución del HPA durante la prueba de carga (2026-11-21T17:21:12Z)
+--- 17:21:12
+tasks-api   Deployment/tasks-api   cpu: <unknown>/60%, memory: <unknown>/80%   2     5     1     14s
+tasks-api-85bb4f8f64-qsrt2         54m   21Mi   
+tasks-api-85bb4f8f64-zwr48         51m   22Mi   
+tasks-api-redis-6548b557f4-gszl4   18m   4Mi    
+--- 17:21:28
+tasks-api   Deployment/tasks-api   cpu: 500%/60%, memory: 38%/80%   2     5     2     30s
+tasks-api-85bb4f8f64-qsrt2         54m    21Mi   
+tasks-api-85bb4f8f64-zwr48         250m   27Mi   
+tasks-api-redis-6548b557f4-gszl4   16m    4Mi    
+--- 17:21:43
+tasks-api   Deployment/tasks-api   cpu: 480%/60%, memory: 53%/80%   2     5     4     45s
+tasks-api-85bb4f8f64-5726n         149m   36Mi   
+tasks-api-85bb4f8f64-kwtzs         151m   35Mi   
+tasks-api-85bb4f8f64-qsrt2         240m   32Mi   
+tasks-api-85bb4f8f64-zwr48         248m   32Mi   
+tasks-api-redis-6548b557f4-gszl4   11m    4Mi    
+--- 17:21:58
+tasks-api   Deployment/tasks-api   cpu: 479%/60%, memory: 54%/80%   2     5     5     60s
+tasks-api-85bb4f8f64-5726n         233m   35Mi   
+tasks-api-85bb4f8f64-kwtzs         251m   35Mi   
+tasks-api-85bb4f8f64-lbpp9         191m   36Mi   
+tasks-api-85bb4f8f64-qsrt2         240m   32Mi   
+tasks-api-85bb4f8f64-zwr48         235m   32Mi   
+tasks-api-redis-6548b557f4-gszl4   11m    4Mi    
+--- 17:22:13
+tasks-api   Deployment/tasks-api   cpu: 446%/60%, memory: 54%/80%   2     5     5     75s
+tasks-api-85bb4f8f64-5726n         207m   37Mi   
+tasks-api-85bb4f8f64-kwtzs         226m   35Mi   
+tasks-api-85bb4f8f64-lbpp9         220m   36Mi   
+tasks-api-85bb4f8f64-qsrt2         232m   32Mi   
+tasks-api-85bb4f8f64-zwr48         230m   32Mi   
+tasks-api-redis-6548b557f4-gszl4   12m    4Mi    
+--- 17:22:28
+tasks-api   Deployment/tasks-api   cpu: 448%/60%, memory: 54%/80%   2     5     5     91s
+tasks-api-85bb4f8f64-5726n         220m   36Mi   
+tasks-api-85bb4f8f64-kwtzs         227m   36Mi   
+tasks-api-85bb4f8f64-lbpp9         220m   36Mi   
+tasks-api-85bb4f8f64-qsrt2         225m   32Mi   
+tasks-api-85bb4f8f64-zwr48         228m   32Mi   
+tasks-api-redis-6548b557f4-gszl4   11m    4Mi    
+--- 17:22:44
+tasks-api   Deployment/tasks-api   cpu: 446%/60%, memory: 54%/80%   2     5     5     106s
+tasks-api-85bb4f8f64-5726n         214m   36Mi   
+tasks-api-85bb4f8f64-kwtzs         225m   36Mi   
+tasks-api-85bb4f8f64-lbpp9         225m   36Mi   
+tasks-api-85bb4f8f64-qsrt2         224m   32Mi   
+tasks-api-85bb4f8f64-zwr48         227m   32Mi   
+tasks-api-redis-6548b557f4-gszl4   11m    4Mi    
+--- 17:22:59
+tasks-api   Deployment/tasks-api   cpu: 450%/60%, memory: 54%/80%   2     5     5     2m1s
+tasks-api-85bb4f8f64-5726n         223m   35Mi   
+tasks-api-85bb4f8f64-kwtzs         227m   35Mi   
+tasks-api-85bb4f8f64-lbpp9         222m   36Mi   
+tasks-api-85bb4f8f64-qsrt2         231m   32Mi   
+tasks-api-85bb4f8f64-zwr48         224m   32Mi   
+tasks-api-redis-6548b557f4-gszl4   12m    9Mi    
+--- 17:23:14
+tasks-api   Deployment/tasks-api   cpu: 443%/60%, memory: 54%/80%   2     5     5     2m16s
+tasks-api-85bb4f8f64-5726n         211m   36Mi   
+tasks-api-85bb4f8f64-kwtzs         226m   35Mi   
+tasks-api-85bb4f8f64-lbpp9         229m   35Mi   
+tasks-api-85bb4f8f64-qsrt2         219m   32Mi   
+tasks-api-85bb4f8f64-zwr48         223m   32Mi   
+tasks-api-redis-6548b557f4-gszl4   10m    4Mi    
+--- 17:23:29
+tasks-api   Deployment/tasks-api   cpu: 231%/60%, memory: 53%/80%   2     5     5     2m31s
+tasks-api-85bb4f8f64-5726n         27m    35Mi   
+tasks-api-85bb4f8f64-kwtzs         117m   35Mi   
+tasks-api-85bb4f8f64-lbpp9         178m   35Mi   
+tasks-api-85bb4f8f64-qsrt2         33m    32Mi   
+tasks-api-85bb4f8f64-zwr48         223m   32Mi   
+tasks-api-redis-6548b557f4-gszl4   12m    5Mi    
+Réplicas máximas observadas: 5

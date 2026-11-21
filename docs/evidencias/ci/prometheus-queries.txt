@@ -1,0 +1,14 @@
+## Targets de tasks-api (up)
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"up","container":"tasks-api","endpoint":"http","instance":"10.244.0.21:3000","job":"tasks-api","namespace":"tasks-api","pod":"tasks-api-85bb4f8f64-5726n","service":"tasks-api"},"value":[1795282046.827,"1"]},{"metric":{"__name__":"up","container":"tasks-api","endpoint":"http","instance":"10.244.0.22:3000","job":"tasks-api","namespace":"tasks-api","pod":"tasks-api-85bb4f8f64-lbpp9","service":"tasks-api"},"value":[1795282046.827,"1"]},{"metric":{"__name__":"up","container":"tasks-api","endpoint":"http","instance":"10.244.0.17:3000","job":"tasks-api","namespace":"tasks-api","pod":"tasks-api-85bb4f8f64-qsrt2","service":"tasks-api"},"value":[1795282046.827,"1"]}]}}
+## Peticiones totales por ruta
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"route":"/healthz","status":"200"},"value":[1795282046.837,"106"]},{"metric":{"route":"/readyz","status":"200"},"value":[1795282046.837,"212"]},{"metric":{"route":"/api/work","status":"200"},"value":[1795282046.837,"1196"]},{"metric":{"route":"/api/tasks","status":"201"},"value":[1795282046.837,"1"]},{"metric":{"route":"/api/tasks/:id","status":"200"},"value":[1795282046.837,"1"]},{"metric":{"route":"/api/tasks","status":"400"},"value":[1795282046.837,"5"]},{"metric":{"route":"unmatched","status":"404"},"value":[1795282046.837,"265"]},{"metric":{"route":"/","status":"200"},"value":[1795282046.837,"98"]},{"metric":{"route":"/api/tasks","status":"200"},"value":[1795282046.837,"19"]}]}}
+## Latencia p95 (5m)
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{},"value":[1795282046.845,"0.2887570120490744"]}]}}
+## Réplicas actuales del HPA
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"kube_horizontalpodautoscaler_status_current_replicas","container":"kube-state-metrics","endpoint":"http","horizontalpodautoscaler":"tasks-api","instance":"10.244.0.11:8080","job":"kube-state-metrics","namespace":"tasks-api","pod":"monitoring-kube-state-metrics-6444d8f9c4-x7w4j","service":"monitoring-kube-state-metrics"},"value":[1795282046.855,"3"]}]}}
+## Reglas de alerta cargadas
+"name":"TasksApiCpuOverProvisioned"
+"name":"TasksApiDown"
+"name":"TasksApiHighErrorRate"
+"name":"TasksApiHighLatencyP95"
+"name":"TasksApiHpaAtMax"
