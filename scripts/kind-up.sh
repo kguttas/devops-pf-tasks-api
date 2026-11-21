@@ -57,6 +57,7 @@ cp -r "${ROOT}/k8s/." "${OVERLAY}/"
 ( cd "${OVERLAY}/overlays/kind" && kubectl kustomize . \
     | sed "s#image: tasks-api:local#image: ${IMAGE}#" > "${OVERLAY}/rendered.yaml" )
 kubectl apply -f "${OVERLAY}/rendered.yaml"
+kubectl -n tasks-api rollout status deployment/tasks-api-redis --timeout=180s
 kubectl -n tasks-api rollout status deployment/tasks-api --timeout=180s
 
 log "Entorno listo"

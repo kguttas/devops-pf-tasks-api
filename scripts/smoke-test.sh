@@ -8,10 +8,13 @@ fail() { echo "FAIL: $*" >&2; exit 1; }
 
 echo "Smoke tests contra ${BASE_URL}"
 
-# El ingress puede tardar unos segundos en enrutar tras el primer deploy.
-for i in $(seq 1 30); do
-  if curl -fsS "${BASE_URL}/healthz" >/dev/null 2>&1; then break; fi
-  [[ $i == 30 ]] && fail "la app no respondió en ${BASE_URL}/healthz"
+# El ingress puede tardar unos segundos en tener endpoints listos tras el deploy:
+# se exigen 5 respuestas correctas seguidas de /readyz antes de empezar.
+ok=0
+for i in $(seq 1 60); do
+  if curl -fsS "${BASE_URL}/readyz" >/dev/null 2>&1; then ok=$((ok+1)); else ok=0; fi
+  (( ok >= 5 )) && break
+  [[ $i == 60 ]] && fail "la app no quedó lista en ${BASE_URL}/readyz"
   sleep 2
 done
 

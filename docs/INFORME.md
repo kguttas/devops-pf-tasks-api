@@ -2,6 +2,7 @@
 
 **Pipeline CI/CD completo con Docker, Terraform, Kubernetes, monitoreo, DevSecOps y FinOps**
 
+- Autor: Estrada
 - Repositorio: https://github.com/kguttas/devops-pf-tasks-api
 - Pipeline: https://github.com/kguttas/devops-pf-tasks-api/actions/workflows/ci-cd.yml
 - Fecha: noviembre de 2026

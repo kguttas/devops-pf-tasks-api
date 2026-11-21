@@ -292,7 +292,7 @@ jobs:
           GRAFANA_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
         run: bash scripts/kind-up.sh
       - name: Smoke tests vía Ingress
-        run: bash scripts/smoke-test.sh | tee -a "$OUT/smoke-test.log"
+        run: mkdir -p "$OUT" && bash scripts/smoke-test.sh | tee -a "$OUT/smoke-test.log"
       - name: Prueba de carga (demuestra el HPA)
         run: DURATION=120 bash scripts/load-test.sh
       - name: DAST - OWASP ZAP baseline
