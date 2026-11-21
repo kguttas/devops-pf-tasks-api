@@ -1,0 +1,7 @@
+# Copiar a backend.hcl (ignorado por git) y ajustar:
+#   terraform init -backend-config=backend.hcl
+bucket       = "tasks-api-tfstate-<sufijo-unico>"
+key          = "dev/terraform.tfstate"
+region       = "us-east-1"
+encrypt      = true
+use_lockfile = true
