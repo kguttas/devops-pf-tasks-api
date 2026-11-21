@@ -318,11 +318,9 @@ jobs:
         run: |
           kubectl -n monitoring port-forward svc/monitoring-grafana 3001:80 >/dev/null 2>&1 &
           sleep 5
-          npx -y playwright@1.55.0 install --with-deps chromium >/dev/null
-          npx -y playwright@1.55.0 screenshot --full-page --wait-for-timeout 15000 \
-            --viewport-size "1600,1100" \
-            "http://localhost:3001/d/tasks-api/tasks-api-servicio?orgId=1&from=now-15m&to=now" \
-            "$OUT/grafana-dashboard.png"
+          # Imagen oficial de Playwright: trae Chromium y sus dependencias (independiente del SO del runner).
+          mkdir -p "$OUT" && chmod 777 "$OUT"
+          docker run --rm --network host -v "$PWD/$OUT:/out" mcr.microsoft.com/playwright:v1.55.0-noble             npx -y playwright@1.55.0 screenshot --full-page --wait-for-timeout 15000               --viewport-size "1600,1100"               "http://localhost:3001/d/tasks-api/tasks-api-servicio?orgId=1&from=now-15m&to=now"               /out/grafana-dashboard.png
       - name: Reunir evidencias
         if: always()
         run: bash scripts/collect-evidence.sh
