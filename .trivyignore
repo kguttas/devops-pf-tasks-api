@@ -1,0 +1,13 @@
+# Hallazgos aceptados conscientemente (con justificación). Mantener esta lista corta.
+#
+# AVD-AWS-0040 / AVD-AWS-0041: API pública de EKS. Se mantiene para que el pipeline de
+# GitHub Actions pueda desplegar; se restringe con cluster_endpoint_public_access_cidrs.
+AVD-AWS-0040
+AVD-AWS-0041
+# AVD-AWS-0104: egress 0.0.0.0/0 en el SG administrado por EKS (necesario para descargar imágenes).
+AVD-AWS-0104
+# AWS-0132: bucket de estado cifrado con SSE-S3 (AES256) en lugar de una CMK de KMS.
+# Decisión FinOps: SSE-S3 no tiene costo; la CMK suma ~1 USD/mes + llamadas a la API,
+# y el bucket ya es privado, versionado y con acceso público bloqueado.
+AWS-0132
+AVD-AWS-0132

@@ -1,0 +1,409 @@
+# Pipeline CI/CD completo:
+#   build & test -> SAST/SCA/IaC scan -> imagen Docker (scan + push a GHCR)
+#   -> Terraform (validate / plan / apply) -> deploy en entorno de pruebas (kind)
+#   con monitoreo, smoke tests, prueba de carga (HPA) y DAST -> deploy en EKS.
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md", "docs/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-cd-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash # bash -eo pipefail: un fallo dentro de un pipe (cmd | tee) falla el paso
+
+env:
+  IMAGE_NAME: tasks-api
+  NODE_VERSION: "22"
+
+jobs:
+  # ---------------------------------------------------------------- BUILD & TEST
+  build-test:
+    name: Build y tests unitarios
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - name: Lint (ESLint)
+        run: npm run lint
+      - name: Tests unitarios + cobertura
+        run: npm test | tee test-output.txt
+      - name: Publicar resultados de tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            app/test-results.xml
+            app/test-output.txt
+
+  # ---------------------------------------------------------------- SAST (CodeQL)
+  sast-codeql:
+    name: SAST - CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+      - uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:javascript"
+
+  # ------------------------------------------- SCA + secretos + IaC (Trivy)
+  security-scan:
+    name: SAST - Dependencias, secretos e IaC (Trivy)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: npm audit (dependencias de producción)
+        working-directory: app
+        run: npm audit --omit=dev --audit-level=high
+      - name: Trivy - vulnerabilidades, secretos y misconfiguraciones (Terraform, K8s, Dockerfile)
+        run: |
+          docker run --rm -v "$PWD:/src" -w /src aquasec/trivy:latest fs \
+            --scanners vuln,secret,misconfig --severity HIGH,CRITICAL \
+            --skip-dirs app/node_modules \
+            --format sarif --output trivy-fs.sarif .
+          # Tabla legible en el log + falla el job si hay hallazgos CRITICAL.
+          docker run --rm -v "$PWD:/src" -w /src aquasec/trivy:latest fs \
+            --scanners vuln,secret,misconfig --severity HIGH,CRITICAL \
+            --skip-dirs app/node_modules --ignorefile .trivyignore \
+            --exit-code 0 . | tee trivy-fs.txt
+          docker run --rm -v "$PWD:/src" -w /src aquasec/trivy:latest fs \
+            --scanners vuln,secret,misconfig --severity CRITICAL \
+            --skip-dirs app/node_modules --ignorefile .trivyignore --exit-code 1 .
+      - name: Subir SARIF a GitHub Security
+        if: always() && hashFiles('trivy-fs.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-fs.sarif
+          category: trivy-fs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-fs-report
+          path: trivy-fs.*
+
+  # ---------------------------------------------------------------- DOCKER
+  docker:
+    name: Imagen Docker (build, scan, push)
+    runs-on: ubuntu-latest
+    needs: [build-test]
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
+    outputs:
+      image: ${{ steps.vars.outputs.image }}
+      tag: ${{ steps.vars.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v5
+      - id: vars
+        name: Nombre y tag de la imagen
+        run: |
+          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "image=ghcr.io/${owner}/${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
+          echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
+      - name: Etapa de test dentro del Dockerfile (multi-stage)
+        uses: docker/build-push-action@v6
+        with:
+          context: app
+          target: test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Build de la imagen final
+        uses: docker/build-push-action@v6
+        with:
+          context: app
+          target: runtime
+          load: true
+          build-args: APP_VERSION=${{ steps.vars.outputs.tag }}
+          tags: |
+            ${{ steps.vars.outputs.image }}:${{ steps.vars.outputs.tag }}
+            ${{ steps.vars.outputs.image }}:latest
+          cache-from: type=gha
+      - name: Tamaño de la imagen
+        run: docker image ls "${{ steps.vars.outputs.image }}" | tee image-size.txt
+      - name: Trivy - escaneo de la imagen
+        run: |
+          IMG="${{ steps.vars.outputs.image }}:${{ steps.vars.outputs.tag }}"
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD:/out" aquasec/trivy:latest \
+            image --ignore-unfixed --format sarif --output /out/trivy-image.sarif "$IMG"
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest \
+            image --ignore-unfixed --severity HIGH,CRITICAL "$IMG" | tee trivy-image.txt
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest \
+            image --ignore-unfixed --severity CRITICAL --exit-code 1 "$IMG"
+      - name: Subir SARIF de la imagen
+        if: always() && hashFiles('trivy-image.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-image.sarif
+          category: trivy-image
+      - name: Exportar imagen para el entorno de pruebas
+        run: docker save "${{ steps.vars.outputs.image }}:${{ steps.vars.outputs.tag }}" | gzip > image.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: image.tar.gz
+          retention-days: 3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-image-report
+          path: |
+            trivy-image.*
+            image-size.txt
+      - name: Login a GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push a GHCR
+        if: github.event_name != 'pull_request'
+        run: |
+          docker push "${{ steps.vars.outputs.image }}:${{ steps.vars.outputs.tag }}"
+          docker push "${{ steps.vars.outputs.image }}:latest"
+
+  # ---------------------------------------------------------------- TERRAFORM
+  terraform:
+    name: Terraform (fmt, validate, plan, apply)
+    runs-on: ubuntu-latest
+    needs: [security-scan]
+    permissions:
+      contents: read
+      id-token: write # OIDC hacia AWS: sin access keys de larga duración
+      pull-requests: write
+    env:
+      TF_IN_AUTOMATION: "true"
+      AWS_ENABLED: ${{ vars.AWS_ENABLED }}
+      INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform
+    outputs:
+      applied: ${{ steps.apply.outcome == 'success' }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.17.2"
+      - name: terraform fmt
+        run: terraform fmt -check -recursive
+      - name: terraform validate (sin backend)
+        run: |
+          terraform init -backend=false -input=false
+          terraform validate
+          (cd bootstrap && terraform init -backend=false -input=false && terraform validate)
+
+      # ---- A partir de aquí solo si la cuenta AWS está configurada (vars.AWS_ENABLED=true) ----
+      - name: Credenciales AWS (OIDC)
+        if: env.AWS_ENABLED == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: terraform init (backend S3)
+        if: env.AWS_ENABLED == 'true'
+        run: |
+          terraform init -input=false -reconfigure \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="key=dev/terraform.tfstate" \
+            -backend-config="region=${{ vars.AWS_REGION || 'us-east-1' }}" \
+            -backend-config="use_lockfile=true" -backend-config="encrypt=true"
+      - name: terraform plan
+        if: env.AWS_ENABLED == 'true'
+        run: |
+          terraform plan -input=false -var-file=environments/dev.tfvars -out=tfplan
+          terraform show -no-color tfplan > plan.txt
+      - name: Estimación de costos (Infracost)
+        if: env.AWS_ENABLED == 'true' && env.INFRACOST_API_KEY != ''
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+          terraform show -json tfplan > plan.json
+          infracost breakdown --path plan.json --format table | tee infracost.txt
+      - uses: actions/upload-artifact@v4
+        if: env.AWS_ENABLED == 'true'
+        with:
+          name: terraform-plan
+          path: |
+            terraform/plan.txt
+            terraform/infracost.txt
+      - name: terraform apply
+        id: apply
+        if: env.AWS_ENABLED == 'true' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: terraform apply -input=false -auto-approve tfplan
+
+  # ------------------------------------------------ DEPLOY EN ENTORNO DE PRUEBAS + DAST
+  deploy-test:
+    name: Deploy en entorno de pruebas (kind) + monitoreo + DAST
+    runs-on: ubuntu-latest
+    needs: [docker, sast-codeql, security-scan]
+    env:
+      IMAGE: ${{ needs.docker.outputs.image }}:${{ needs.docker.outputs.tag }}
+      BASE_URL: http://localhost:8080
+      OUT: evidence
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+      - name: Cargar imagen
+        run: gunzip -c image.tar.gz | docker load
+      - name: Herramientas (kind, kubectl, helm)
+        run: |
+          kind version || { curl -sSLo kind https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64 && chmod +x kind && sudo mv kind /usr/local/bin/; }
+          kubectl version --client
+          helm version --short
+      - name: Crear cluster y desplegar (ingress, metrics-server, Prometheus, Grafana, app)
+        env:
+          GRAFANA_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+        run: bash scripts/kind-up.sh
+      - name: Smoke tests vía Ingress
+        run: bash scripts/smoke-test.sh | tee -a "$OUT/smoke-test.log"
+      - name: Prueba de carga (demuestra el HPA)
+        run: DURATION=120 bash scripts/load-test.sh
+      - name: DAST - OWASP ZAP baseline
+        timeout-minutes: 10
+        run: |
+          mkdir -p zap && chmod 777 zap
+          cp .zap/rules.tsv zap/
+          docker run --rm --network host -v "$PWD/zap:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t "$BASE_URL" -c rules.tsv -I \
+              -r zap-report.html -J zap-report.json -w zap-report.md
+          # Falla el pipeline si ZAP reporta alertas de riesgo Alto.
+          high=$(python3 -c "import json;d=json.load(open('zap/zap-report.json'));print(sum(1 for s in d['site'] for a in s['alerts'] if a['riskcode']=='3'))")
+          echo "Alertas de riesgo alto: $high"
+          test "$high" -eq 0
+      - name: DAST - OWASP ZAP full scan (escaneo activo de la API)
+        timeout-minutes: 15
+        run: |
+          docker run --rm --network host -v "$PWD/zap:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:stable \
+            zap-full-scan.py -t "$BASE_URL/api/tasks" -c rules.tsv -I -m 1 \
+              -r zap-api-report.html || true
+      - name: Captura del dashboard de Grafana
+        continue-on-error: true
+        run: |
+          kubectl -n monitoring port-forward svc/monitoring-grafana 3001:80 >/dev/null 2>&1 &
+          sleep 5
+          npx -y playwright@1.55.0 install --with-deps chromium >/dev/null
+          npx -y playwright@1.55.0 screenshot --full-page --wait-for-timeout 15000 \
+            --viewport-size "1600,1100" \
+            "http://localhost:3001/d/tasks-api/tasks-api-servicio?orgId=1&from=now-15m&to=now" \
+            "$OUT/grafana-dashboard.png"
+      - name: Reunir evidencias
+        if: always()
+        run: bash scripts/collect-evidence.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-deploy-test
+          path: |
+            evidence/
+            zap/
+
+  # ---------------------------------------------------------------- DEPLOY EN EKS
+  deploy-eks:
+    name: Deploy en EKS (AWS)
+    runs-on: ubuntu-latest
+    needs: [docker, terraform, deploy-test]
+    if: vars.AWS_ENABLED == 'true' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    environment:
+      name: aws-dev # permite exigir aprobación manual en Settings > Environments
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+      CLUSTER: tasks-api-dev
+      TAG: ${{ needs.docker.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+      - name: Publicar imagen en ECR (el node group tiene permiso de lectura)
+        id: ecr
+        run: |
+          gunzip -c image.tar.gz | docker load
+          account=$(aws sts get-caller-identity --query Account --output text)
+          registry="${account}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+          aws ecr get-login-password | docker login --username AWS --password-stdin "$registry"
+          target="${registry}/tasks-api:${TAG}"
+          docker tag "${{ needs.docker.outputs.image }}:${TAG}" "$target"
+          # Tags inmutables: si el tag ya existe (re-ejecución) no se vuelve a subir.
+          aws ecr describe-images --repository-name tasks-api --image-ids imageTag="${TAG}" >/dev/null 2>&1 \
+            || docker push "$target"
+          echo "image=${registry}/tasks-api" >> "$GITHUB_OUTPUT"
+      - name: kubeconfig
+        run: aws eks update-kubeconfig --name "$CLUSTER" --region "$AWS_REGION"
+      - name: Plataforma (ingress-nginx + monitoreo)
+        env:
+          GRAFANA_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+        run: |
+          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo update
+          helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx --create-namespace \
+            --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-type"=nlb \
+            --set controller.metrics.enabled=true --wait
+          helm upgrade --install monitoring prometheus-community/kube-prometheus-stack -n monitoring --create-namespace \
+            -f monitoring/kube-prometheus-stack-values.yaml --set grafana.adminPassword="$GRAFANA_PASSWORD" --wait --timeout 10m
+          kubectl apply -k monitoring/k8s
+      - name: Desplegar la aplicación (rolling update)
+        run: |
+          cd k8s/overlays/eks
+          kustomize edit set image "ghcr.io/OWNER/tasks-api=${{ steps.ecr.outputs.image }}:${TAG}"
+          kubectl apply -k .
+          kubectl -n tasks-api rollout status deployment/tasks-api --timeout=300s
+      - name: Smoke tests contra el Load Balancer
+        run: |
+          host=$(kubectl -n ingress-nginx get svc ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          BASE_URL="http://${host}" bash scripts/smoke-test.sh
+      - name: Rollback automático si falla
+        if: failure()
+        run: kubectl -n tasks-api rollout undo deployment/tasks-api || true
+      - name: Evidencias
+        if: always()
+        run: OUT=evidence-eks bash scripts/collect-evidence.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-eks
+          path: evidence-eks/

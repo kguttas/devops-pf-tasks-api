@@ -1,0 +1,52 @@
+# FinOps: destruye el entorno de pruebas en AWS cuando no se usa (p. ej. al terminar la evaluación).
+# Se ejecuta a mano desde Actions > "Destroy infra" escribiendo "destroy" como confirmación.
+name: Destroy infra
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Escribe "destroy" para confirmar'
+        required: true
+      environment:
+        description: Entorno
+        type: choice
+        options: [dev]
+        default: dev
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  destroy:
+    if: inputs.confirm == 'destroy'
+    runs-on: ubuntu-latest
+    environment:
+      name: aws-dev
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform
+    steps:
+      - uses: actions/checkout@v5
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.17.2"
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: Borrar el Load Balancer creado por Kubernetes (no lo gestiona Terraform)
+        continue-on-error: true
+        run: |
+          aws eks update-kubeconfig --name tasks-api-${{ inputs.environment }} --region "${{ vars.AWS_REGION || 'us-east-1' }}"
+          helm uninstall ingress-nginx -n ingress-nginx --wait || true
+      - name: terraform destroy
+        run: |
+          terraform init -input=false \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="key=${{ inputs.environment }}/terraform.tfstate" \
+            -backend-config="region=${{ vars.AWS_REGION || 'us-east-1' }}" \
+            -backend-config="use_lockfile=true"
+          terraform destroy -input=false -auto-approve -var-file=environments/${{ inputs.environment }}.tfvars

@@ -1,0 +1,7 @@
+10049	IGNORE	(Non-Storable Content: es una API JSON sin caché, comportamiento esperado)
+10104	IGNORE	(User Agent Fuzzer: informativo)
+90004	IGNORE	(Spectre / Site Isolation: aplica a navegadores, no a una API JSON)
+10055	WARN	(CSP: helmet la envía; se revisa como advertencia)
+10021	FAIL	(X-Content-Type-Options ausente)
+10020	FAIL	(Anti-clickjacking ausente)
+10038	WARN	(CSP header not set)
