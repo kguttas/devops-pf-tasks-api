@@ -135,14 +135,14 @@ jobs:
           echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
       - uses: docker/setup-buildx-action@v3
       - name: Etapa de test dentro del Dockerfile (multi-stage)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: app
           target: test
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Build de la imagen final
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: app
           target: runtime
