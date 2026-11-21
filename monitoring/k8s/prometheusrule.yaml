@@ -1,0 +1,48 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: tasks-api-alerts
+  namespace: monitoring
+spec:
+  groups:
+    - name: tasks-api
+      rules:
+        - alert: TasksApiDown
+          expr: absent(up{job="tasks-api"} == 1)
+          for: 2m
+          labels: { severity: critical }
+          annotations:
+            summary: "tasks-api no tiene instancias activas"
+        - alert: TasksApiHighErrorRate
+          expr: |
+            sum(rate(http_requests_total{job="tasks-api",status=~"5.."}[5m]))
+              / clamp_min(sum(rate(http_requests_total{job="tasks-api"}[5m])), 1e-9) > 0.05
+          for: 5m
+          labels: { severity: warning }
+          annotations:
+            summary: "Más del 5% de respuestas 5xx en tasks-api"
+        - alert: TasksApiHighLatencyP95
+          expr: |
+            histogram_quantile(0.95,
+              sum by (le) (rate(http_request_duration_seconds_bucket{job="tasks-api"}[5m]))) > 0.5
+          for: 5m
+          labels: { severity: warning }
+          annotations:
+            summary: "Latencia p95 de tasks-api sobre 500 ms"
+        - alert: TasksApiHpaAtMax
+          expr: |
+            kube_horizontalpodautoscaler_status_current_replicas{horizontalpodautoscaler="tasks-api"}
+              >= kube_horizontalpodautoscaler_spec_max_replicas{horizontalpodautoscaler="tasks-api"}
+          for: 10m
+          labels: { severity: warning }
+          annotations:
+            summary: "El HPA está en su máximo: revisar capacidad y costo"
+        # FinOps: Pods que piden mucho más CPU de la que usan (candidatos a right-sizing).
+        - alert: TasksApiCpuOverProvisioned
+          expr: |
+            sum(rate(container_cpu_usage_seconds_total{namespace="tasks-api",container="tasks-api"}[1h]))
+              / sum(kube_pod_container_resource_requests{namespace="tasks-api",container="tasks-api",resource="cpu"}) < 0.2
+          for: 6h
+          labels: { severity: info }
+          annotations:
+            summary: "tasks-api usa menos del 20% de la CPU solicitada: reducir requests"

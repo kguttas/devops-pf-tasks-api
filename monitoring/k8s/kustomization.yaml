@@ -1,0 +1,17 @@
+# Recursos de monitoreo de la app (requiere kube-prometheus-stack instalado).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: monitoring
+resources:
+  - servicemonitor.yaml
+  - prometheusrule.yaml
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+  # El sidecar de Grafana carga automáticamente los ConfigMaps con esta etiqueta.
+  - name: grafana-dashboard-tasks-api
+    files:
+      - dashboards/tasks-api.json
+    options:
+      labels:
+        grafana_dashboard: "1"

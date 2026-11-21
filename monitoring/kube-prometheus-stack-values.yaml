@@ -1,0 +1,73 @@
+# Valores para el chart prometheus-community/kube-prometheus-stack.
+# Instalación:
+#   helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
+#     -n monitoring --create-namespace -f monitoring/kube-prometheus-stack-values.yaml
+# Perfil liviano (FinOps): sin Alertmanager HA, retención corta, recursos acotados.
+
+fullnameOverride: monitoring
+
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    replicas: 1
+    resources:
+      requests: { cpu: 10m, memory: 32Mi }
+      limits: { memory: 64Mi }
+
+prometheus:
+  prometheusSpec:
+    replicas: 1
+    retention: 3d
+    retentionSize: 2GB
+    scrapeInterval: 15s
+    # Descubre ServiceMonitors/PrometheusRules de cualquier namespace (no solo los del chart).
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    resources:
+      requests: { cpu: 100m, memory: 256Mi }
+      limits: { memory: 768Mi }
+
+grafana:
+  enabled: true
+  adminUser: admin
+  # Contraseña: en CI/EKS se pasa como secreto (--set grafana.adminPassword=$GRAFANA_ADMIN_PASSWORD).
+  # Nunca se versiona una contraseña real.
+  service:
+    type: ClusterIP
+  # Grafana 12 necesita ~300 MiB al arrancar (migraciones): con 256Mi la mataba el OOMKiller.
+  resources:
+    requests: { cpu: 50m, memory: 256Mi }
+    limits: { memory: 512Mi }
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+      searchNamespace: ALL
+  defaultDashboardsTimezone: browser
+
+kube-state-metrics:
+  resources:
+    requests: { cpu: 10m, memory: 32Mi }
+    limits: { memory: 128Mi }
+
+prometheus-node-exporter:
+  resources:
+    requests: { cpu: 10m, memory: 24Mi }
+    limits: { memory: 64Mi }
+
+prometheusOperator:
+  resources:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits: { memory: 256Mi }
+
+# Componentes del control plane que kind/EKS no exponen: se desactivan para evitar alertas falsas.
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeProxy:
+  enabled: false
