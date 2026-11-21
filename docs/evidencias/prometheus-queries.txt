@@ -1,0 +1,14 @@
+## Targets de tasks-api (up)
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"up","container":"tasks-api","endpoint":"http","instance":"10.244.0.30:3000","job":"tasks-api","namespace":"tasks-api","pod":"tasks-api-6c85f7f9c9-4d6z4","service":"tasks-api"},"value":[1795280169.711,"1"]},{"metric":{"__name__":"up","container":"tasks-api","endpoint":"http","instance":"10.244.0.31:3000","job":"tasks-api","namespace":"tasks-api","pod":"tasks-api-6c85f7f9c9-zpgcw","service":"tasks-api"},"value":[1795280169.711,"1"]},{"metric":{"__name__":"up","container":"tasks-api","endpoint":"http","instance":"10.244.0.33:3000","job":"tasks-api","namespace":"tasks-api","pod":"tasks-api-6c85f7f9c9-8b42f","service":"tasks-api"},"value":[1795280169.711,"1"]},{"metric":{"__name__":"up","container":"tasks-api","endpoint":"http","instance":"10.244.0.34:3000","job":"tasks-api","namespace":"tasks-api","pod":"tasks-api-6c85f7f9c9-td82j","service":"tasks-api"},"value":[1795280169.711,"1"]},{"metric":{"__name__":"up","container":"tasks-api","endpoint":"http","instance":"10.244.0.35:3000","job":"tasks-api","namespace":"tasks-api","pod":"tasks-api-6c85f7f9c9-wjh2b","service":"tasks-api"},"value":[1795280169.711,"1"]}]}}
+## Peticiones totales por ruta
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"route":"/healthz","status":"200"},"value":[1795280169.759,"163"]},{"metric":{"route":"/readyz","status":"200"},"value":[1795280169.759,"321"]},{"metric":{"route":"/","status":"200"},"value":[1795280169.759,"1"]},{"metric":{"route":"/api/tasks","status":"201"},"value":[1795280169.759,"1"]},{"metric":{"route":"/api/tasks","status":"400"},"value":[1795280169.759,"1"]},{"metric":{"route":"unmatched","status":"404"},"value":[1795280169.759,"1"]},{"metric":{"route":"/api/work","status":"200"},"value":[1795280169.759,"1516"]}]}}
+## Latencia p95 (5m)
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{},"value":[1795280169.803,"0.3663982842248785"]}]}}
+## Réplicas actuales del HPA
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"kube_horizontalpodautoscaler_status_current_replicas","container":"kube-state-metrics","endpoint":"http","horizontalpodautoscaler":"tasks-api","instance":"10.244.0.18:8080","job":"kube-state-metrics","namespace":"tasks-api","pod":"monitoring-kube-state-metrics-6444d8f9c4-g4vrp","service":"monitoring-kube-state-metrics"},"value":[1795280169.866,"5"]}]}}
+## Reglas de alerta cargadas
+"name":"TasksApiCpuOverProvisioned"
+"name":"TasksApiDown"
+"name":"TasksApiHighErrorRate"
+"name":"TasksApiHighLatencyP95"
+"name":"TasksApiHpaAtMax"

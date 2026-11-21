@@ -1,0 +1,103 @@
+LAST SEEN   TYPE      REASON                         OBJECT                                  MESSAGE
+12m         Normal    Scheduled                      pod/tasks-api-6466fd5f56-rshqv          Successfully assigned tasks-api/tasks-api-6466fd5f56-rshqv to tasks-api-control-plane
+12m         Normal    SuccessfulCreate               replicaset/tasks-api-6466fd5f56         Created pod: tasks-api-6466fd5f56-hhq9s
+12m         Normal    Created                        pod/tasks-api-6466fd5f56-rshqv          Container created
+12m         Normal    Pulled                         pod/tasks-api-6466fd5f56-rshqv          Container image "tasks-api:local" already present on machine and can be accessed by the pod
+12m         Normal    ScalingReplicaSet              deployment/tasks-api                    Scaled up replica set tasks-api-6466fd5f56 from 0 to 1
+12m         Normal    SuccessfulCreate               replicaset/tasks-api-6466fd5f56         Created pod: tasks-api-6466fd5f56-rshqv
+12m         Normal    SuccessfulRescale              horizontalpodautoscaler/tasks-api       New size: 2; reason: Current number of replicas below Spec.MinReplicas
+12m         Normal    Scheduled                      pod/tasks-api-6466fd5f56-hhq9s          Successfully assigned tasks-api/tasks-api-6466fd5f56-hhq9s to tasks-api-control-plane
+12m         Normal    ScalingReplicaSet              deployment/tasks-api                    Scaled up replica set tasks-api-6466fd5f56 from 1 to 2
+12m         Normal    Pulled                         pod/tasks-api-6466fd5f56-hhq9s          Container image "tasks-api:local" already present on machine and can be accessed by the pod
+12m         Normal    Started                        pod/tasks-api-6466fd5f56-hhq9s          Container started
+12m         Normal    Created                        pod/tasks-api-6466fd5f56-hhq9s          Container created
+12m         Normal    Started                        pod/tasks-api-6466fd5f56-rshqv          Container started
+12m         Normal    Sync                           ingress/tasks-api                       Scheduled for sync
+12m         Warning   FailedComputeMetricsReplicas   horizontalpodautoscaler/tasks-api       invalid metrics (1 invalid out of 2), first error is: failed to get cpu resource metric value: failed to get cpu utilization: did not receive metrics for targeted pods (pods might be unready)
+11m         Normal    SuccessfulCreate               replicaset/tasks-api-6466fd5f56         Created pod: tasks-api-6466fd5f56-jw7l6
+11m         Normal    SuccessfulCreate               replicaset/tasks-api-6466fd5f56         Created pod: tasks-api-6466fd5f56-s9t2m
+11m         Normal    Scheduled                      pod/tasks-api-6466fd5f56-jw7l6          Successfully assigned tasks-api/tasks-api-6466fd5f56-jw7l6 to tasks-api-control-plane
+11m         Normal    ScalingReplicaSet              deployment/tasks-api                    Scaled up replica set tasks-api-6466fd5f56 from 2 to 4
+11m         Normal    Scheduled                      pod/tasks-api-6466fd5f56-s9t2m          Successfully assigned tasks-api/tasks-api-6466fd5f56-s9t2m to tasks-api-control-plane
+11m         Normal    Created                        pod/tasks-api-6466fd5f56-jw7l6          Container created
+11m         Normal    Pulled                         pod/tasks-api-6466fd5f56-s9t2m          Container image "tasks-api:local" already present on machine and can be accessed by the pod
+11m         Normal    Created                        pod/tasks-api-6466fd5f56-s9t2m          Container created
+11m         Normal    Started                        pod/tasks-api-6466fd5f56-s9t2m          Container started
+11m         Normal    Started                        pod/tasks-api-6466fd5f56-jw7l6          Container started
+11m         Normal    Pulled                         pod/tasks-api-6466fd5f56-jw7l6          Container image "tasks-api:local" already present on machine and can be accessed by the pod
+11m         Normal    ScalingReplicaSet              deployment/tasks-api                    Scaled up replica set tasks-api-6466fd5f56 from 4 to 5
+11m         Normal    Scheduled                      pod/tasks-api-6466fd5f56-n24bn          Successfully assigned tasks-api/tasks-api-6466fd5f56-n24bn to tasks-api-control-plane
+11m         Normal    SuccessfulCreate               replicaset/tasks-api-6466fd5f56         Created pod: tasks-api-6466fd5f56-n24bn
+11m         Normal    Created                        pod/tasks-api-6466fd5f56-n24bn          Container created
+11m         Normal    Pulled                         pod/tasks-api-6466fd5f56-n24bn          Container image "tasks-api:local" already present on machine and can be accessed by the pod
+11m         Normal    Started                        pod/tasks-api-6466fd5f56-n24bn          Container started
+7m4s        Normal    SuccessfulDelete               replicaset/tasks-api-6466fd5f56         Deleted pod: tasks-api-6466fd5f56-jw7l6
+7m4s        Normal    ScalingReplicaSet              deployment/tasks-api                    Scaled down replica set tasks-api-6466fd5f56 from 5 to 4
+7m4s        Normal    SuccessfulRescale              horizontalpodautoscaler/tasks-api       New size: 4; reason: All metrics below target
+7m4s        Normal    Killing                        pod/tasks-api-6466fd5f56-jw7l6          Stopping container tasks-api
+6m58s       Normal    ScalingReplicaSet              deployment/tasks-api-redis              Scaled up replica set tasks-api-redis-6548b557f4 from 0 to 1
+6m58s       Normal    Scheduled                      pod/tasks-api-redis-6548b557f4-nk5kl    Successfully assigned tasks-api/tasks-api-redis-6548b557f4-nk5kl to tasks-api-control-plane
+6m58s       Normal    SuccessfulCreate               replicaset/tasks-api-redis-6548b557f4   Created pod: tasks-api-redis-6548b557f4-nk5kl
+6m57s       Normal    Pulling                        pod/tasks-api-redis-6548b557f4-nk5kl    Pulling image "redis:8.2-alpine"
+6m57s       Normal    Created                        pod/tasks-api-6c85f7f9c9-zrxsl          Container created
+6m57s       Normal    SuccessfulCreate               replicaset/tasks-api-6c85f7f9c9         Created pod: tasks-api-6c85f7f9c9-zrxsl
+6m57s       Normal    Pulled                         pod/tasks-api-6c85f7f9c9-zrxsl          Container image "tasks-api:local" already present on machine and can be accessed by the pod
+6m57s       Normal    Scheduled                      pod/tasks-api-6c85f7f9c9-zrxsl          Successfully assigned tasks-api/tasks-api-6c85f7f9c9-zrxsl to tasks-api-control-plane
+6m57s       Normal    Started                        pod/tasks-api-6c85f7f9c9-zrxsl          Container started
+6m57s       Normal    ScalingReplicaSet              deployment/tasks-api                    Scaled up replica set tasks-api-6c85f7f9c9 from 0 to 1
+6m52s       Normal    Pulled                         pod/tasks-api-redis-6548b557f4-nk5kl    Successfully pulled image "redis:8.2-alpine" in 5.151s (5.151s including waiting). Image size: 27877149 bytes.
+6m52s       Normal    Created                        pod/tasks-api-redis-6548b557f4-nk5kl    Container created
+6m52s       Normal    Started                        pod/tasks-api-redis-6548b557f4-nk5kl    Container started
+6m51s       Warning   Unhealthy                      pod/tasks-api-6c85f7f9c9-zrxsl          Startup probe failed: Get "http://10.244.0.29:3000/healthz": dial tcp 10.244.0.29:3000: connect: connection refused
+6m49s       Normal    SuccessfulDelete               replicaset/tasks-api-6466fd5f56         Deleted pod: tasks-api-6466fd5f56-s9t2m
+6m49s       Normal    Pulled                         pod/tasks-api-6c85f7f9c9-4d6z4          Container image "tasks-api:local" already present on machine and can be accessed by the pod
+6m49s       Normal    Killing                        pod/tasks-api-6466fd5f56-s9t2m          Stopping container tasks-api
+6m49s       Normal    ScalingReplicaSet              deployment/tasks-api                    Scaled up replica set tasks-api-6c85f7f9c9 from 1 to 2
+6m49s       Normal    ScalingReplicaSet              deployment/tasks-api                    Scaled down replica set tasks-api-6466fd5f56 from 4 to 3
+6m49s       Normal    SuccessfulCreate               replicaset/tasks-api-6c85f7f9c9         Created pod: tasks-api-6c85f7f9c9-4d6z4
+6m49s       Normal    Scheduled                      pod/tasks-api-6c85f7f9c9-4d6z4          Successfully assigned tasks-api/tasks-api-6c85f7f9c9-4d6z4 to tasks-api-control-plane
+6m48s       Normal    Started                        pod/tasks-api-6c85f7f9c9-4d6z4          Container started
+6m48s       Normal    Created                        pod/tasks-api-6c85f7f9c9-4d6z4          Container created
+6m46s       Normal    ScalingReplicaSet              deployment/tasks-api                    Scaled down replica set tasks-api-6466fd5f56 from 3 to 2
+6m46s       Normal    Scheduled                      pod/tasks-api-6c85f7f9c9-zpgcw          Successfully assigned tasks-api/tasks-api-6c85f7f9c9-zpgcw to tasks-api-control-plane
+6m46s       Normal    SuccessfulDelete               replicaset/tasks-api-6466fd5f56         Deleted pod: tasks-api-6466fd5f56-n24bn
+6m46s       Normal    SuccessfulCreate               replicaset/tasks-api-6c85f7f9c9         Created pod: tasks-api-6c85f7f9c9-zpgcw
+6m46s       Normal    Killing                        pod/tasks-api-6466fd5f56-n24bn          Stopping container tasks-api
+6m45s       Normal    Created                        pod/tasks-api-6c85f7f9c9-zpgcw          Container created
+6m45s       Normal    Started                        pod/tasks-api-6c85f7f9c9-zpgcw          Container started
+6m45s       Normal    Pulled                         pod/tasks-api-6c85f7f9c9-zpgcw          Container image "tasks-api:local" already present on machine and can be accessed by the pod
+6m43s       Normal    Killing                        pod/tasks-api-6466fd5f56-rshqv          Stopping container tasks-api
+6m43s       Normal    SuccessfulCreate               replicaset/tasks-api-6c85f7f9c9         Created pod: tasks-api-6c85f7f9c9-b57sm
+6m43s       Normal    SuccessfulDelete               replicaset/tasks-api-6466fd5f56         Deleted pod: tasks-api-6466fd5f56-rshqv
+6m43s       Normal    Scheduled                      pod/tasks-api-6c85f7f9c9-b57sm          Successfully assigned tasks-api/tasks-api-6c85f7f9c9-b57sm to tasks-api-control-plane
+6m42s       Normal    Started                        pod/tasks-api-6c85f7f9c9-b57sm          Container started
+6m42s       Normal    Created                        pod/tasks-api-6c85f7f9c9-b57sm          Container created
+6m42s       Normal    Pulled                         pod/tasks-api-6c85f7f9c9-b57sm          Container image "tasks-api:local" already present on machine and can be accessed by the pod
+6m40s       Normal    Killing                        pod/tasks-api-6466fd5f56-hhq9s          Stopping container tasks-api
+6m40s       Normal    SuccessfulDelete               replicaset/tasks-api-6466fd5f56         Deleted pod: tasks-api-6466fd5f56-hhq9s
+6m34s       Warning   FailedGetResourceMetric        horizontalpodautoscaler/tasks-api       failed to get cpu utilization: did not receive metrics for targeted pods (pods might be unready)
+4m33s       Normal    SuccessfulRescale              horizontalpodautoscaler/tasks-api       New size: 3; reason: All metrics below target
+4m33s       Normal    SuccessfulDelete               replicaset/tasks-api-6c85f7f9c9         Deleted pod: tasks-api-6c85f7f9c9-zrxsl
+4m33s       Normal    Killing                        pod/tasks-api-6c85f7f9c9-zrxsl          Stopping container tasks-api
+4m3s        Normal    SuccessfulRescale              horizontalpodautoscaler/tasks-api       New size: 2; reason: All metrics below target
+4m3s        Normal    SuccessfulDelete               replicaset/tasks-api-6c85f7f9c9         Deleted pod: tasks-api-6c85f7f9c9-b57sm
+4m3s        Normal    Killing                        pod/tasks-api-6c85f7f9c9-b57sm          Stopping container tasks-api
+3m3s        Normal    Created                        pod/tasks-api-6c85f7f9c9-td82j          Container created
+3m3s        Normal    SuccessfulCreate               replicaset/tasks-api-6c85f7f9c9         Created pod: tasks-api-6c85f7f9c9-td82j
+3m3s        Normal    SuccessfulCreate               replicaset/tasks-api-6c85f7f9c9         Created pod: tasks-api-6c85f7f9c9-8b42f
+3m3s        Normal    Scheduled                      pod/tasks-api-6c85f7f9c9-8b42f          Successfully assigned tasks-api/tasks-api-6c85f7f9c9-8b42f to tasks-api-control-plane
+3m3s        Normal    Pulled                         pod/tasks-api-6c85f7f9c9-8b42f          Container image "tasks-api:local" already present on machine and can be accessed by the pod
+3m3s        Normal    SuccessfulRescale              horizontalpodautoscaler/tasks-api       New size: 4; reason: cpu resource utilization (percentage of request) above target
+3m3s        Normal    Created                        pod/tasks-api-6c85f7f9c9-8b42f          Container created
+3m3s        Normal    Scheduled                      pod/tasks-api-6c85f7f9c9-td82j          Successfully assigned tasks-api/tasks-api-6c85f7f9c9-td82j to tasks-api-control-plane
+3m3s        Normal    Pulled                         pod/tasks-api-6c85f7f9c9-td82j          Container image "tasks-api:local" already present on machine and can be accessed by the pod
+3m2s        Normal    Started                        pod/tasks-api-6c85f7f9c9-td82j          Container started
+3m2s        Normal    Started                        pod/tasks-api-6c85f7f9c9-8b42f          Container started
+2m48s       Normal    Pulled                         pod/tasks-api-6c85f7f9c9-wjh2b          Container image "tasks-api:local" already present on machine and can be accessed by the pod
+2m48s       Normal    Scheduled                      pod/tasks-api-6c85f7f9c9-wjh2b          Successfully assigned tasks-api/tasks-api-6c85f7f9c9-wjh2b to tasks-api-control-plane
+2m48s       Normal    SuccessfulCreate               replicaset/tasks-api-6c85f7f9c9         Created pod: tasks-api-6c85f7f9c9-wjh2b
+2m48s       Normal    SuccessfulRescale              horizontalpodautoscaler/tasks-api       New size: 5; reason: cpu resource utilization (percentage of request) above target
+2m48s       Normal    Created                        pod/tasks-api-6c85f7f9c9-wjh2b          Container created
+2m48s       Normal    ScalingReplicaSet              deployment/tasks-api                    (combined from similar events): Scaled up replica set tasks-api-6c85f7f9c9 from 4 to 5
+2m47s       Normal    Started                        pod/tasks-api-6c85f7f9c9-wjh2b          Container started
+2m46s       Warning   Unhealthy                      pod/tasks-api-6c85f7f9c9-wjh2b          Startup probe failed: Get "http://10.244.0.35:3000/healthz": dial tcp 10.244.0.35:3000: connect: connection refused

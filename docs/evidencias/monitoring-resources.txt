@@ -1,0 +1,62 @@
+NAME                                                 READY   STATUS    RESTARTS   AGE
+pod/alertmanager-monitoring-alertmanager-0           2/2     Running   0          12m
+pod/monitoring-grafana-7bcc484774-xg2jr              3/3     Running   0          12m
+pod/monitoring-kube-state-metrics-6444d8f9c4-g4vrp   1/1     Running   0          12m
+pod/monitoring-operator-789cfdb565-dz2f7             1/1     Running   0          12m
+pod/monitoring-prometheus-node-exporter-5jpvr        1/1     Running   0          12m
+pod/prometheus-monitoring-prometheus-0               2/2     Running   0          12m
+
+NAME                                          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+service/alertmanager-operated                 ClusterIP   None            <none>        9093/TCP,9094/TCP,9094/UDP   12m
+service/monitoring-alertmanager               ClusterIP   10.96.208.143   <none>        9093/TCP,8080/TCP            12m
+service/monitoring-grafana                    ClusterIP   10.96.183.176   <none>        80/TCP                       12m
+service/monitoring-kube-state-metrics         ClusterIP   10.96.129.112   <none>        8080/TCP                     12m
+service/monitoring-operator                   ClusterIP   10.96.196.4     <none>        443/TCP                      12m
+service/monitoring-prometheus                 ClusterIP   10.96.169.151   <none>        9090/TCP,8080/TCP            12m
+service/monitoring-prometheus-node-exporter   ClusterIP   10.96.115.103   <none>        9100/TCP                     12m
+service/prometheus-operated                   ClusterIP   None            <none>        9090/TCP                     12m
+
+NAME                                                                       AGE
+servicemonitor.monitoring.coreos.com/monitoring-alertmanager               12m
+servicemonitor.monitoring.coreos.com/monitoring-apiserver                  12m
+servicemonitor.monitoring.coreos.com/monitoring-coredns                    12m
+servicemonitor.monitoring.coreos.com/monitoring-grafana                    12m
+servicemonitor.monitoring.coreos.com/monitoring-kube-state-metrics         12m
+servicemonitor.monitoring.coreos.com/monitoring-kubelet                    12m
+servicemonitor.monitoring.coreos.com/monitoring-operator                   12m
+servicemonitor.monitoring.coreos.com/monitoring-prometheus                 12m
+servicemonitor.monitoring.coreos.com/monitoring-prometheus-node-exporter   12m
+servicemonitor.monitoring.coreos.com/tasks-api                             12m
+
+NAME                                                                                           AGE
+prometheusrule.monitoring.coreos.com/monitoring-alertmanager.rules                             12m
+prometheusrule.monitoring.coreos.com/monitoring-config-reloaders                               12m
+prometheusrule.monitoring.coreos.com/monitoring-general.rules                                  12m
+prometheusrule.monitoring.coreos.com/monitoring-k8s.rules.container-cpu-usage-seconds-total    12m
+prometheusrule.monitoring.coreos.com/monitoring-k8s.rules.container-memory-cache               12m
+prometheusrule.monitoring.coreos.com/monitoring-k8s.rules.container-memory-rss                 12m
+prometheusrule.monitoring.coreos.com/monitoring-k8s.rules.container-memory-swap                12m
+prometheusrule.monitoring.coreos.com/monitoring-k8s.rules.container-memory-working-set-bytes   12m
+prometheusrule.monitoring.coreos.com/monitoring-k8s.rules.container-resource                   12m
+prometheusrule.monitoring.coreos.com/monitoring-k8s.rules.pod-owner                            12m
+prometheusrule.monitoring.coreos.com/monitoring-kube-apiserver-availability.rules              12m
+prometheusrule.monitoring.coreos.com/monitoring-kube-apiserver-burnrate.rules                  12m
+prometheusrule.monitoring.coreos.com/monitoring-kube-apiserver-histogram.rules                 12m
+prometheusrule.monitoring.coreos.com/monitoring-kube-apiserver-slos                            12m
+prometheusrule.monitoring.coreos.com/monitoring-kube-prometheus-general.rules                  12m
+prometheusrule.monitoring.coreos.com/monitoring-kube-prometheus-node-recording.rules           12m
+prometheusrule.monitoring.coreos.com/monitoring-kube-state-metrics                             12m
+prometheusrule.monitoring.coreos.com/monitoring-kubelet.rules                                  12m
+prometheusrule.monitoring.coreos.com/monitoring-kubernetes-apps                                12m
+prometheusrule.monitoring.coreos.com/monitoring-kubernetes-resources                           12m
+prometheusrule.monitoring.coreos.com/monitoring-kubernetes-storage                             12m
+prometheusrule.monitoring.coreos.com/monitoring-kubernetes-system                              12m
+prometheusrule.monitoring.coreos.com/monitoring-kubernetes-system-apiserver                    12m
+prometheusrule.monitoring.coreos.com/monitoring-kubernetes-system-kubelet                      12m
+prometheusrule.monitoring.coreos.com/monitoring-node-exporter                                  12m
+prometheusrule.monitoring.coreos.com/monitoring-node-exporter.rules                            12m
+prometheusrule.monitoring.coreos.com/monitoring-node-network                                   12m
+prometheusrule.monitoring.coreos.com/monitoring-node.rules                                     12m
+prometheusrule.monitoring.coreos.com/monitoring-prometheus                                     12m
+prometheusrule.monitoring.coreos.com/monitoring-prometheus-operator                            12m
+prometheusrule.monitoring.coreos.com/tasks-api-alerts                                          12m

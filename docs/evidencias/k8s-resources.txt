@@ -1,0 +1,36 @@
+NAME                                   READY   STATUS    RESTARTS   AGE     IP            NODE                      NOMINATED NODE   READINESS GATES
+pod/tasks-api-6c85f7f9c9-4d6z4         1/1     Running   0          6m48s   10.244.0.30   tasks-api-control-plane   <none>           <none>
+pod/tasks-api-6c85f7f9c9-8b42f         1/1     Running   0          3m2s    10.244.0.33   tasks-api-control-plane   <none>           <none>
+pod/tasks-api-6c85f7f9c9-td82j         1/1     Running   0          3m2s    10.244.0.34   tasks-api-control-plane   <none>           <none>
+pod/tasks-api-6c85f7f9c9-wjh2b         1/1     Running   0          2m47s   10.244.0.35   tasks-api-control-plane   <none>           <none>
+pod/tasks-api-6c85f7f9c9-zpgcw         1/1     Running   0          6m45s   10.244.0.31   tasks-api-control-plane   <none>           <none>
+pod/tasks-api-redis-6548b557f4-nk5kl   1/1     Running   0          6m57s   10.244.0.28   tasks-api-control-plane   <none>           <none>
+
+NAME                      TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE     SELECTOR
+service/tasks-api         ClusterIP   10.96.157.166   <none>        80/TCP     12m     app.kubernetes.io/name=tasks-api
+service/tasks-api-redis   ClusterIP   10.96.152.21    <none>        6379/TCP   6m58s   app.kubernetes.io/name=tasks-api-redis
+
+NAME                              READY   UP-TO-DATE   AVAILABLE   AGE     CONTAINERS   IMAGES             SELECTOR
+deployment.apps/tasks-api         5/5     5            5           12m     tasks-api    tasks-api:local    app.kubernetes.io/name=tasks-api
+deployment.apps/tasks-api-redis   1/1     1            1           6m58s   redis        redis:8.2-alpine   app.kubernetes.io/name=tasks-api-redis
+
+NAME                                         DESIRED   CURRENT   READY   AGE     CONTAINERS   IMAGES             SELECTOR
+replicaset.apps/tasks-api-6466fd5f56         0         0         0       12m     tasks-api    tasks-api:local    app.kubernetes.io/name=tasks-api,pod-template-hash=6466fd5f56
+replicaset.apps/tasks-api-6c85f7f9c9         5         5         5       6m57s   tasks-api    tasks-api:local    app.kubernetes.io/name=tasks-api,pod-template-hash=6c85f7f9c9
+replicaset.apps/tasks-api-redis-6548b557f4   1         1         1       6m58s   redis        redis:8.2-alpine   app.kubernetes.io/name=tasks-api-redis,pod-template-hash=6548b557f4
+
+NAME                                            REFERENCE              TARGETS                        MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/tasks-api   Deployment/tasks-api   cpu: 7%/60%, memory: 40%/80%   2         5         5          12m
+
+NAME                                  CLASS   HOSTS   ADDRESS     PORTS   AGE
+ingress.networking.k8s.io/tasks-api   nginx   *       localhost   80      12m
+
+NAME                                   MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+poddisruptionbudget.policy/tasks-api   1               N/A               4                     12m
+
+NAME                                              POD-SELECTOR                             AGE
+networkpolicy.networking.k8s.io/tasks-api         app.kubernetes.io/name=tasks-api         12m
+networkpolicy.networking.k8s.io/tasks-api-redis   app.kubernetes.io/name=tasks-api-redis   6m58s
+
+NAME                            REQUEST                                                        LIMIT                                           AGE
+resourcequota/tasks-api-quota   pods: 6/20, requests.cpu: 270m/2, requests.memory: 352Mi/2Gi   limits.cpu: 1450m/4, limits.memory: 704Mi/4Gi   12m

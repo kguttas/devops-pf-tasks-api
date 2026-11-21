@@ -1,0 +1,3 @@
+Smoke tests contra http://localhost:8080
+{"name":"tasks-api","version":"local","endpoints":["/api/tasks","/healthz","/readyz","/metrics"]}
+OK: todas las pruebas de humo pasaron

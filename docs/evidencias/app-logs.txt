@@ -1,0 +1,5 @@
+[pod/tasks-api-6c85f7f9c9-8b42f/tasks-api] {"level":"info","msg":"tasks-api listening","port":3000,"store":"RedisStore"}
+[pod/tasks-api-6c85f7f9c9-td82j/tasks-api] {"level":"info","msg":"tasks-api listening","port":3000,"store":"RedisStore"}
+[pod/tasks-api-6c85f7f9c9-wjh2b/tasks-api] {"level":"info","msg":"tasks-api listening","port":3000,"store":"RedisStore"}
+[pod/tasks-api-6c85f7f9c9-zpgcw/tasks-api] {"level":"info","msg":"tasks-api listening","port":3000,"store":"RedisStore"}
+[pod/tasks-api-6c85f7f9c9-4d6z4/tasks-api] {"level":"info","msg":"tasks-api listening","port":3000,"store":"RedisStore"}
