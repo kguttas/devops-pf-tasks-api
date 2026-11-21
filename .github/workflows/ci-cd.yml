@@ -217,7 +217,7 @@ jobs:
       applied: ${{ steps.apply.outcome == 'success' }}
     steps:
       - uses: actions/checkout@v5
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: "1.17.2"
       - name: terraform fmt
