@@ -1,0 +1,35 @@
+# Node
+node_modules/
+coverage/
+app/test-results.xml
+app/test-output.txt
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+plan.json
+crash.log
+backend.hcl
+*.auto.tfvars
+terraform.tfvars
+
+# Secretos locales
+.env
+.env.*
+*.pem
+*.key
+kubeconfig*
+
+# Salidas de pipeline generadas localmente
+/evidence/
+/zap/
+image.tar.gz
+
+# SO / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
